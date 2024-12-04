@@ -1,0 +1,42 @@
+name: Main
+
+on:
+  push:
+    branches:
+      - "*"
+
+jobs:
+  static-analysis:
+    name: StaticAnalysis
+    uses: ./.github/workflows/static-analysis.yaml
+    secrets: inherit
+  build:
+    needs: static-analysis
+    name: Build
+    uses: ./.github/workflows/build.yaml
+    secrets: inherit
+  unit-test:
+    needs: build
+    name: UnitTest
+    uses: ./.github/workflows/unit-test.yaml
+    secrets: inherit
+  build-image:
+    needs: unit-test
+    name: BuildImage
+    uses: ./.github/workflows/build-image.yaml
+    secrets: inherit
+  integration-test:
+    needs: build-image
+    name: IntegrationTest
+    uses: ./.github/workflows/integration-test.yaml
+    secrets: inherit
+  system-test:
+    needs: integration-test
+    name: SystemTest
+    uses: ./.github/workflows/system-test.yaml
+    secrets: inherit
+  release:
+    needs: system-test
+    name: Release
+    uses: ./.github/workflows/release.yaml
+    secrets: inherit
